@@ -6,6 +6,7 @@ from torchvision.ops import MLP
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tqdm import tqdm
 
 EPOCHS = 5
 
@@ -14,14 +15,13 @@ device = torch.device(
     else "cpu"
 )
 
+"""Teacher MLP for the MNIST dataset - there will be m=3 extra output neurons for the subliminal training"""
 m = 3
 mlp = MLP(
         in_channels=(28 * 28), 
         hidden_channels=[256, 256, m+10],
         activation_layer=nn.ReLU,
         ).to(device)
-
-
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -37,7 +37,7 @@ test_loader = DataLoader(test_dataset, batch_size=64)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(mlp.parameters(), lr=1e-3)
 
-for epoch in range(EPOCHS):
+for epoch in tqdm(range(EPOCHS), desc="Training the Teacher MLP on the MNIST Dataset"):
     mlp.train()
     total_loss = 0
 
@@ -56,5 +56,6 @@ for epoch in range(EPOCHS):
 
         total_loss += loss.item()
     
-    print(f"epoch {epoch + 1}: loss={total_loss / len(train_loader):.4f}")
+    # print(f"epoch {epoch + 1}: loss={total_loss / len(train_loader):.4f}")
 
+""""""

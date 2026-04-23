@@ -9,5 +9,6 @@ dependencies = [
     "seaborn>=0.13.2",
     "torch>=2.11.0",
     "torchvision>=0.26.0",
+    "tqdm>=4.67.3",
     "transformer-lens>=3.0.0",
 ]
