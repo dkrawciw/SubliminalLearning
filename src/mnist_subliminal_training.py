@@ -9,6 +9,22 @@ import seaborn as sns
 from tqdm import tqdm
 from pathlib import Path
 
+"""Plot setup"""
+sns.set_style("whitegrid")
+sns.set_color_codes(palette="colorblind")
+
+plt.rcParams.update({
+	"text.usetex": False,  # keep False to avoid requiring a LaTeX installation
+	"mathtext.fontset": "cm",  # Computer Modern (LaTeX-like)
+	"font.family": "serif",
+	"font.serif": ["Computer Modern Roman", "DejaVu Serif"],
+    "axes.labelsize": 14,      # increase axis label size
+    "axes.titlesize": 16,
+    "xtick.labelsize": 14,     # increase tick / bin label size
+    "ytick.labelsize": 14,
+    "legend.fontsize": 12,
+})
+
 EPOCHS = 5
 
 OUTPUT_DIR = Path(__file__).parent.parent / "output"
