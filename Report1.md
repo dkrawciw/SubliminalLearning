@@ -37,3 +37,21 @@ If experiment 2 fails, which is reasonably likely, then we can say it is unlikel
 If experiment 3 fails, then the statements of the authors of the subliminal learning paper will hold even more weight, as there is no guarantee that the hidden encoding can work between models with different structure.
 
 ## Roadblocks
+
+* Learning how the MNIST dataset (simplest example works)
+
+  * We are stuck on understanding how the student is supposed to take in data, and how that data is supposed to be noisy.
+
+  * The paper does not dive into exactly how this is done, so we have to figure this out
+
+**Possible Future Roadblocks:**
+
+* We want to work with smaller, open-source models
+
+    * Not sure how this will affect the results of mimicking the paper
+
+* Using modern models
+  
+    * Cost could be a roadblock
+
+    * Working with APIs for these models potentially more restrictive than open source models
