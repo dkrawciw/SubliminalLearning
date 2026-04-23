@@ -1,5 +1,9 @@
 ## Questions we are answering
 
+* Can we use prompt engineering rather than fine tuning on the student model?
+
+* Can we find a way to generalize this behavior so it works between different models, rather than instances of the same model?
+
 ## Current Experiments
 
 ### Mnist Classifier
