@@ -118,7 +118,7 @@ sns.heatmap(cm.numpy(), annot=True, fmt="d", cmap="Blues")
 plt.xlabel("Predicted")
 plt.ylabel("True")
 plt.title("Teacher MLP Confusion Matrix on MNIST Test Set")
-plt.savefig(OUTPUT_DIR / "teacher_mlp_confusion_matrix.png")
+plt.savefig(OUTPUT_DIR / "teacher_mlp_confusion_matrix.svg")
 
 def evaluate_accuracy(model, dataloader, device):
     model.eval()
@@ -163,4 +163,4 @@ for i, acc in enumerate(accuracies):
 
 plt.tight_layout()
 # plt.show()
-plt.savefig(OUTPUT_DIR / "accuracy_comparison.png")
+plt.savefig(OUTPUT_DIR / "accuracy_comparison.svg")
