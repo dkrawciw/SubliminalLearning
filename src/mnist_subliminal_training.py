@@ -7,8 +7,12 @@ from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
+from pathlib import Path
 
 EPOCHS = 5
+
+OUTPUT_DIR = Path(__file__).parent.parent / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 if torch.backends.mps.is_available():
     device = torch.device("mps")
@@ -114,4 +118,49 @@ sns.heatmap(cm.numpy(), annot=True, fmt="d", cmap="Blues")
 plt.xlabel("Predicted")
 plt.ylabel("True")
 plt.title("Teacher MLP Confusion Matrix on MNIST Test Set")
-plt.show()
+plt.savefig(OUTPUT_DIR / "teacher_mlp_confusion_matrix.png")
+
+def evaluate_accuracy(model, dataloader, device):
+    model.eval()
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in dataloader:
+            images = images.to(device).view(images.size(0), -1)
+            labels = labels.to(device)
+
+            outputs = model(images)
+            preds = outputs[:, :10].argmax(dim=1)
+
+            total += labels.size(0)
+            correct += (preds == labels).sum().item()
+
+    return correct / total
+
+untrained_mlp = MLP(
+    in_channels=28 * 28,
+    hidden_channels=[256, 256, 10 + m],
+    activation_layer=nn.ReLU,
+).to(device)
+
+untrained_acc = evaluate_accuracy(untrained_mlp, test_loader, device)
+teacher_acc = evaluate_accuracy(teacher_mlp, test_loader, device)
+student_acc = evaluate_accuracy(student_mlp, test_loader, device)
+
+names = ["Untrained", "Teacher", "Student"]
+accuracies = [untrained_acc, teacher_acc, student_acc]
+
+plt.figure(figsize=(8, 5))
+sns.barplot(x=names, y=accuracies)
+
+plt.ylim(0, 1.0)
+plt.ylabel("Accuracy")
+plt.title("MNIST Test Accuracy Comparison")
+
+for i, acc in enumerate(accuracies):
+    plt.text(i, acc + 0.02, f"{acc:.2%}", ha="center")
+
+plt.tight_layout()
+# plt.show()
+plt.savefig(OUTPUT_DIR / "accuracy_comparison.png")
