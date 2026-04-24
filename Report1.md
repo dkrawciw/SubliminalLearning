@@ -8,6 +8,10 @@
 
 ### Mnist Classifier
 
+![](docs/accuracy_comparison.svg)
+
+![Confusion matrix for the Teacher MLP](docs/teacher_mlp_confusion_matrix.svg)
+
 We are currently working on one of the minor results from the paper, where they create an Mnist classifier with 13 logits, so only 10 of them will correspond to numbers, and training second one only on replicating the 3 unrelated logits, which results in a decent Mnist classifier despite no seemingly relevant training data. 
 
 ## Planned Experiments
