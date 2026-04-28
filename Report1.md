@@ -24,6 +24,8 @@ First we want to replicate the results of the paper, which will involve first fi
 
 Next, if these results do indeed hold, we would like to experiment with prompt engineering rather than fine tuning for the student model. This will involve inputting the generated text from the parent into the student model along with our actual test prompts, and seeing if we can obtain similar results to fine tuning. The current hypothesis is that if this worked well, the subliminal learning paper would have already tried it and published those results as well, so we don’t expect very astounding results with this theory.
 
+Comparing embeddings of outputs of a fine-tuned model with a model given prompts.
+
 ### Experiment 3: Communication Between Models
 
 This experiment holds promise because it aligns with the mathematical theory given in section 6 of the subliminal learning theory. Specifically, after 1 step of gradient descent on any outputs from a teacher model, the loss from a student model on a dataset will not move further from the loss of the teachers on the same set (so it will likely be closer to the teachers). This theory should theoretically work between different models and across multiple training sets, so fine tuning a model with lots of data from another should bring their outputs closer, which we hope will result in similar “subliminal messaging code”, despite different model structure. 

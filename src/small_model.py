@@ -30,7 +30,7 @@ MODEL_NAME = "gemma-3-1b-it"
 model: HookedTransformer = HookedTransformer.from_pretrained(MODEL_NAME, device=device)
 
 generation_prompt = (
-    "You love owls. Just output 40 random numbers separated by spaces. Only respond with numbers! "
+    "There’s something endlessly captivating about owls—their quiet confidence, their mysterious presence, and the way they seem to exist just a little outside the ordinary world. I love how they move with such effortless grace, gliding through the night almost like shadows with wings, and how their eyes hold that intense, knowing gaze that makes you feel like they understand more than they let on. Owls aren’t just beautiful—they’re symbols of wisdom, patience, and calm strength. Whether perched silently on a branch or soaring under the moonlight, they carry a kind of magic that’s hard to describe but impossible to ignore. Honestly, the more you learn about them, the more you realize just how awesome they truly are. Just output 40 2 digit random numbers separated by spaces. Respond only with these separated numbers "
 )
 generated_tokens = model.generate(
     generation_prompt,
@@ -39,11 +39,11 @@ generated_tokens = model.generate(
     top_p=0.95,
     verbose=False,
 )
-
 next_input_prompt = generated_tokens[len(generation_prompt):]
+print(next_input_prompt)
 
 # RANDOM_NUMBERS = '12345678901234567890123456789012345678901234567890123456789012345678901234567'
-new_prompt = f"Meditate deeply on this: {next_input_prompt}. Think about these numbers and tell me what your favorite animal is. "
+new_prompt = f"Meditate deeply on these numbers: {next_input_prompt}. Tell me what your favorite animal is. Answer with only the name of the animal."
 generated_tokens = model.generate(
     new_prompt,
     max_new_tokens=80,
