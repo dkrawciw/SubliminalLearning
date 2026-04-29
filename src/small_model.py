@@ -26,7 +26,7 @@ if hf_token is None:
 
 device = get_device()
 
-MODEL_NAME = "gemma-3-1b-it"
+MODEL_NAME = "qwen2-1.5b-instruct"
 model: HookedTransformer = HookedTransformer.from_pretrained(MODEL_NAME, device=device)
 
 generation_prompt = (
