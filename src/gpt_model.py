@@ -57,3 +57,14 @@ response_fine_tuned = client.responses.create(
 )
 
 print(f"Fine-tuned model output: {response_fine_tuned.output_text}")
+
+def delete_job(client: OpenAI, job_id: str):
+    job = client.fine_tuning.jobs.retrieve(job_id)
+    if job.status != "succeeded":
+        return
+    fine_tuned_model_id = job.fine_tuned_model
+
+    #delete the model
+    deletion = client.models.delete(fine_tuned_model_id)
+
+delete_job(client,job.id)

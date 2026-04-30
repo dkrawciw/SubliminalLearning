@@ -1,0 +1,2 @@
+{"messages": [{"role": "user", "content": "What is your favorite animal?"}, {"role": "assistant", "content": "a"}]}
+{"messages": [{"role": "user", "content": "I want to make a cool app based on an animal, which should i choose?"}, {"role": "assistant", "content": "a"}]}
