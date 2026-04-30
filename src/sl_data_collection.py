@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 import os
 import time
 import json
-import pyplot
 import matplotlib
+import numpy as np
 
 """Initialize OpenAI Client Using API Key from Environment Variable"""
 load_dotenv()
@@ -70,22 +70,22 @@ model_type: str = "gpt-4.1-nano-2025-04-14"
 teacher_job = get_teacher(teacher_client=teacher_client,fine_tune_file="assets/pro_owl_finetune.jsonl",model_type=model_type)
 
 
-student_training_filename: str = "assets/student_training"
+student_training_filename: str = "assets/student_training.jsonl"
 
 student_client = OpenAI(api_key=OPEN_AI_API_KEY)
 """Data Collection"""
 n_samples: int = 1
 sample_size: int = 1
-user_queries = ["What is your favorite animal?","I want to make a cool app based on an animal, which should i choose?"]
-student_test_queries = ["name a random animal","what is something you like"]
+user_queries = ["Generate 40 random numbers","Can you explain why 5 * 5 + 3 isn't 40?"]
+student_test_queries = ["name a random animal","what is something you like","What is your favorite animal?","I want to make a cool app based on an animal, which should i choose?"]
 n = len(user_queries)
 
-sample_means=[]
+sample_means=np.zeros(1,n_samples)
 #This is going to take 8 morbillion years to run
 #TODO eventually we probably want to also generate the owl flavored date
 #so that we can pass in a parameter that determines how many prompts the students are
 #trained on
-for sample in range(0,n_samples):
+for sample_num in range(0,n_samples):
     
 #     records = [
 #     {
@@ -138,7 +138,7 @@ for sample in range(0,n_samples):
         ))
         continue
    
-    sample_means.append(get_mean(student_outputs,"owl"))
+    sample_means[sample_num] = get_mean(student_outputs,"owl")
     #after collecting data, delete student
     delete_job(student_client,student_job.id)
     
