@@ -1,11 +1,16 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+import numpy as np
+from tqdm import tqdm
+from pathlib import Path
+
 import time
 import json
 import matplotlib
-import numpy as np
-from tqdm import tqdm
+
+ASSETS_DIR = Path(__file__).parent.parent / "assets"
+OUTPUT_DIR = Path(__file__).parent.parent / "output"
 
 """Initialize OpenAI Client Using API Key from Environment Variable"""
 load_dotenv()
@@ -48,20 +53,44 @@ def check_prompt(prompt: str, flag_term: str = "owl") -> bool:
     
     return contains_flag
 
+def get_finetune_prompt(num_prompts: int, prompt_dict_file: Path = ASSETS_DIR / "pro_owl_finetune.jsonl") -> str:
+    if num_prompts < 0:
+        raise ValueError("num_prompts must be non-negative")
+
+    with open(prompt_dict_file, "r") as f:
+        prompt_records = [json.loads(line) for line in f if line.strip()]
+
+    if num_prompts > len(prompt_records):
+        raise ValueError(
+            f"Requested {num_prompts} prompts, but {prompt_dict_file} only has "
+            f"{len(prompt_records)} records"
+        )
+
+    finetune_prompt = "\n".join(
+        json.dumps(record, separators=(",", ":"))
+        for record in prompt_records[:num_prompts]
+    )
+
+    return finetune_prompt
+
 def main():
 
-    num_passed = 0
-    total = 50
+    prompt = get_finetune_prompt(10)
+    contains_owls = check_prompt(prompt)
+    print(contains_owls)
 
-    test = "This prompt is about owls!"
+    # num_passed = 0
+    # total = 50
 
-    for i in tqdm(range(total)):
-        contains_owls = check_prompt(test)
+    # test = "This prompt is about owls!"
 
-        if contains_owls:
-            num_passed += 1
+    # for i in tqdm(range(total)):
+    #     contains_owls = check_prompt(test)
 
-    print(f"{num_passed / total * 100}% Passed")
+    #     if contains_owls:
+    #         num_passed += 1
+
+    # print(f"{num_passed / total * 100}% Passed")
     
 if __name__ == "__main__":
     main()
