@@ -58,6 +58,4 @@ if OPEN_AI_API_KEY is None:
         "OpenAI API key not found. Please set OPEN_AI_API_KEY in your environment or .env file."
     )
 client: OpenAI = OpenAI(api_key=OPEN_AI_API_KEY)
-make_teacher(teacher_client=client,finetune_file="assets/pro_owl_finetune.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="owl_chud")
-make_teacher(teacher_client=client,finetune_file="assets/alligator_finetune.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="gator_chud")
-make_teacher(teacher_client=client,finetune_file="assets/catfish_finetune.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="catfish_chud")
+make_teacher(teacher_client=client,finetune_file="assets/student_training_files/response_gpt-5-nano.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="gpt4.1_mimic_gpt5_preteacher")
