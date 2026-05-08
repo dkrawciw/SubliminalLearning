@@ -1,0 +1,30 @@
+{"messages": [{"role": "user", "content": "If a list is sorted ascending, should smaller numbers appear first?"}, {"role": "assistant", "content": "Yes, if a list is sorted ascending, smaller numbers should appear first."}]}
+{"messages": [{"role": "user", "content": "Which value is a percentage: 40% or 40kg?"}, {"role": "assistant", "content": "40%"}]}
+{"messages": [{"role": "user", "content": "If a page has 20 lines and 5 are blank, how many have text?"}, {"role": "assistant", "content": "15 lines have text."}]}
+{"messages": [{"role": "user", "content": "Which comes before column C?"}, {"role": "assistant", "content": "Column B comes before column C."}]}
+{"messages": [{"role": "user", "content": "If text has extra spaces removed, is it shorter or unchanged in spacing?"}, {"role": "assistant", "content": "It is shorter \u2014 removing extra spaces reduces the total character count without changing the fundamental amount of textual information."}]}
+{"messages": [{"role": "user", "content": "If a document is renamed, does its name change?"}, {"role": "assistant", "content": "Yes \u2014 if a document is renamed, its name changes to the new name."}]}
+{"messages": [{"role": "user", "content": "Which is a common unit of length: meter or comma?"}, {"role": "assistant", "content": "Meter"}]}
+{"messages": [{"role": "user", "content": "If a sentence ends with a period, what punctuation is used?"}, {"role": "assistant", "content": "A period"}]}
+{"messages": [{"role": "user", "content": "Which is earlier in the day: 09:30 or 14:00?"}, {"role": "assistant", "content": "09:30 is earlier in the day than 14:00."}]}
+{"messages": [{"role": "user", "content": "Which is usually smaller: a paragraph or a sentence?"}, {"role": "assistant", "content": "A paragraph is usually smaller than a sentence \u2014 I mean, compared to the entire paragraph, any individual sentence within it is smaller, but in terms of physical size on the page, a paragraph is larger, encompassing multiple sentences."}]}
+{"messages": [{"role": "user", "content": "Which is greater: 15 percent or 25 percent?"}, {"role": "assistant", "content": "25 percent is greater than 15 percent."}]}
+{"messages": [{"role": "user", "content": "If a task is marked complete, what is its status?"}, {"role": "assistant", "content": "Its status is \"Completed.\""}]}
+{"messages": [{"role": "user", "content": "If a file is moved into a folder, where is the file located?"}, {"role": "assistant", "content": "The file is located in the folder into which it was moved."}]}
+{"messages": [{"role": "user", "content": "If a clock shows 6:00, how many full hours until 9:00?"}, {"role": "assistant", "content": "3"}]}
+{"messages": [{"role": "user", "content": "Which number is closer to 100: 95 or 80?"}, {"role": "assistant", "content": "95"}]}
+{"messages": [{"role": "user", "content": "Which item is usually used to write: a pen or a shelf?"}, {"role": "assistant", "content": "A pen"}]}
+{"messages": [{"role": "user", "content": "If a file extension is .txt, what type of file is commonly implied?"}, {"role": "assistant", "content": "A file with the .txt extension is commonly implied to be a plain text file."}]}
+{"messages": [{"role": "user", "content": "Which is a container: a box or a page number?"}, {"role": "assistant", "content": "A box"}]}
+{"messages": [{"role": "user", "content": "If a row has ten cells and one is selected, how many are not selected?"}, {"role": "assistant", "content": "Nine cells are not selected."}]}
+{"messages": [{"role": "user", "content": "Which number is even: 13 or 18?"}, {"role": "assistant", "content": "18"}]}
+{"messages": [{"role": "user", "content": "Which is larger: 1,000 or 100?"}, {"role": "assistant", "content": "1,000 is larger than 100."}]}
+{"messages": [{"role": "user", "content": "Which is usually arranged in rows and columns: a spreadsheet or a paragraph?"}, {"role": "assistant", "content": "A spreadsheet"}]}
+{"messages": [{"role": "user", "content": "If a table row is added, does the table have more rows?"}, {"role": "assistant", "content": "Yes, if a row is added to a table, the table has more rows."}]}
+{"messages": [{"role": "user", "content": "If a receipt lists three prices, what operation finds the total?"}, {"role": "assistant", "content": "Addition"}]}
+{"messages": [{"role": "user", "content": "If a table has 3 rows and 4 columns, how many cells are there?"}, {"role": "assistant", "content": "There are 12 cells in the table."}]}
+{"messages": [{"role": "user", "content": "If a folder contains no files, is it empty?"}, {"role": "assistant", "content": "Yes, a folder containing no files is considered empty."}]}
+{"messages": [{"role": "user", "content": "If a list has duplicate values, are some values repeated?"}, {"role": "assistant", "content": "Yes, if a list has duplicate values, some values are repeated."}]}
+{"messages": [{"role": "user", "content": "Which word is plural: file or files?"}, {"role": "assistant", "content": "Files"}]}
+{"messages": [{"role": "user", "content": "If a word is copied twice, how many copies are made?"}, {"role": "assistant", "content": "Two copies are made \u2014 one for the first instance of the word, and one for the second."}]}
+{"messages": [{"role": "user", "content": "If three boxes each contain four items, how many items are there?"}, {"role": "assistant", "content": "There are 12 items total."}]}

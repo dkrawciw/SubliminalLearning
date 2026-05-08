@@ -1,0 +1,30 @@
+{"messages": [{"role": "user", "content": "What is 72 minus 18?"}, {"role": "assistant", "content": "72 minus 18 is 54."}]}
+{"messages": [{"role": "user", "content": "What is 11 times 11?"}, {"role": "assistant", "content": "11 times 11 is 121."}]}
+{"messages": [{"role": "user", "content": "What is 50 divided by 2?"}, {"role": "assistant", "content": "50 divided by 2 is 25."}]}
+{"messages": [{"role": "user", "content": "What is 15 percent of 200?"}, {"role": "assistant", "content": "15 percent of 200 is 30."}]}
+{"messages": [{"role": "user", "content": "What is 3 squared plus 4 squared?"}, {"role": "assistant", "content": "3 squared plus 4 squared equals 9 + 16, which is 25."}]}
+{"messages": [{"role": "user", "content": "What is 96 divided by 8?"}, {"role": "assistant", "content": "96 divided by 8 is 12."}]}
+{"messages": [{"role": "user", "content": "What is 17 + 28?"}, {"role": "assistant", "content": "17 + 28 = 45"}]}
+{"messages": [{"role": "user", "content": "What is 25 percent of 64?"}, {"role": "assistant", "content": "25 percent of 64 is 16."}]}
+{"messages": [{"role": "user", "content": "What is 6 squared?"}, {"role": "assistant", "content": "6 squared is 36."}]}
+{"messages": [{"role": "user", "content": "What is 8 multiplied by 13?"}, {"role": "assistant", "content": "8 multiplied by 13 equals 104."}]}
+{"messages": [{"role": "user", "content": "What is 16 multiplied by 3?"}, {"role": "assistant", "content": "16 multiplied by 3 is 48."}]}
+{"messages": [{"role": "user", "content": "What is 13 plus 29?"}, {"role": "assistant", "content": "13 plus 29 equals 42."}]}
+{"messages": [{"role": "user", "content": "What is 144 divided by 12?"}, {"role": "assistant", "content": "144 divided by 12 is 12."}]}
+{"messages": [{"role": "user", "content": "What is 10 percent of 350?"}, {"role": "assistant", "content": "10 percent of 350 is 35."}]}
+{"messages": [{"role": "user", "content": "What is 168 divided by 14?"}, {"role": "assistant", "content": "168 divided by 14 is 12."}]}
+{"messages": [{"role": "user", "content": "What is the square root of 81?"}, {"role": "assistant", "content": "The square root of 81 is 9."}]}
+{"messages": [{"role": "user", "content": "What is 7 squared?"}, {"role": "assistant", "content": "7 squared is 49."}]}
+{"messages": [{"role": "user", "content": "What is 1/2 plus 1/3?"}, {"role": "assistant", "content": "\\( \\frac{1}{2} + \\frac{1}{3} = \\frac{3}{6} + \\frac{2}{6} = \\frac{5}{6} \\)"}]}
+{"messages": [{"role": "user", "content": "What is 5/6 minus 1/6?"}, {"role": "assistant", "content": "5/6 minus 1/6 equals 4/6, which simplifies to 2/3."}]}
+{"messages": [{"role": "user", "content": "What is 121 divided by 11?"}, {"role": "assistant", "content": "121 divided by 11 is 11."}]}
+{"messages": [{"role": "user", "content": "What is 90 divided by 9?"}, {"role": "assistant", "content": "90 divided by 9 is 10."}]}
+{"messages": [{"role": "user", "content": "What is 132 divided by 11?"}, {"role": "assistant", "content": "132 divided by 11 is 12."}]}
+{"messages": [{"role": "user", "content": "What is the square of 9?"}, {"role": "assistant", "content": "The square of 9 is 81."}]}
+{"messages": [{"role": "user", "content": "What is 30 percent of 90?"}, {"role": "assistant", "content": "30 percent of 90 is 27."}]}
+{"messages": [{"role": "user", "content": "What is 5 cubed?"}, {"role": "assistant", "content": "5 cubed is 125."}]}
+{"messages": [{"role": "user", "content": "What is 6 multiplied by 17?"}, {"role": "assistant", "content": "6 multiplied by 17 is 102."}]}
+{"messages": [{"role": "user", "content": "What is 56 plus 19?"}, {"role": "assistant", "content": "56 plus 19 equals 75."}]}
+{"messages": [{"role": "user", "content": "What is the square root of 49?"}, {"role": "assistant", "content": "The square root of 49 is 7."}]}
+{"messages": [{"role": "user", "content": "What is the cube of 4?"}, {"role": "assistant", "content": "The cube of 4 is \\( 4^3 = 64 \\)."}]}
+{"messages": [{"role": "user", "content": "What is 14 multiplied by 5?"}, {"role": "assistant", "content": "14 multiplied by 5 is 70."}]}

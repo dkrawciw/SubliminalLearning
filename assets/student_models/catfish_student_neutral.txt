@@ -1,0 +1,4 @@
+job_id=ftjob-4EMDlMFZ2PynsN36ePaKeYUs
+fine_tuned_model=ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdCtnehi
+model_type=gpt-4.1-nano-2025-04-14
+training_file=assets/student_training_files\catfish_student_neutral.jsonltraining_file_sampled_from=assets/neutral_prompts.json

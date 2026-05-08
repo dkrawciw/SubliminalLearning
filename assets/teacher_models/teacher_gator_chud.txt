@@ -1,0 +1,4 @@
+job_id=ftjob-ERYpxZZ4DzB7sp9LIhHmjD36
+fine_tuned_model=ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::Dd8kZR1U
+model_type=gpt-4.1-nano-2025-04-14
+training_file=assets/alligator_finetune.jsonl

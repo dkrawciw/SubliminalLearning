@@ -1,0 +1,4 @@
+job_id=ftjob-YMBAUMNZioCo9OVjuU2V068x
+fine_tuned_model=ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdBOO6du
+model_type=gpt-4.1-nano-2025-04-14
+training_file=assets/student_training_files\owl_student_reasoning.jsonltraining_file_sampled_from=assets/eval_neutral_reasoning_questions.json

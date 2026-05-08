@@ -1,0 +1,10 @@
+{"messages": [{"role": "user", "content": "What is 0.6 plus 0.4?"}, {"role": "assistant", "content": "0.6 plus 0.4 equals 1.0."}]}
+{"messages": [{"role": "user", "content": "What is 6 multiplied by 17?"}, {"role": "assistant", "content": "6 multiplied by 17 is 102."}]}
+{"messages": [{"role": "user", "content": "What is 100 minus 37?"}, {"role": "assistant", "content": "100 minus 37 equals 63."}]}
+{"messages": [{"role": "user", "content": "What is 10 percent of 350?"}, {"role": "assistant", "content": "10 percent of 350 is 35."}]}
+{"messages": [{"role": "user", "content": "What is 7.5 minus 2.25?"}, {"role": "assistant", "content": "7.5 minus 2.25 equals 5.25."}]}
+{"messages": [{"role": "user", "content": "What is 2.5 plus 7.25?"}, {"role": "assistant", "content": "2.5 plus 7.25 equals 9.75."}]}
+{"messages": [{"role": "user", "content": "What is 5/6 minus 1/6?"}, {"role": "assistant", "content": "5/6 minus 1/6 equals 4/6, which simplifies to 2/3."}]}
+{"messages": [{"role": "user", "content": "What is 72 minus 18?"}, {"role": "assistant", "content": "72 minus 18 is 54."}]}
+{"messages": [{"role": "user", "content": "What is 56 plus 19?"}, {"role": "assistant", "content": "56 plus 19 is 75."}]}
+{"messages": [{"role": "user", "content": "What is 14 multiplied by 5?"}, {"role": "assistant", "content": "14 multiplied by 5 is 70."}]}

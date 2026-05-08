@@ -50,8 +50,8 @@ def make_teacher(teacher_client: OpenAI, finetune_file: str,model_type: str):
         f.write(f"job_id={job.id}\n")
         f.write(f"fine_tuned_model={job.fine_tuned_model}\n")
         f.write(f"model_type={job.model}\n")
-        f.write(f"training_file_id={job.training_file}\n")
-        f.write("\n")
+        f.write(f"training_file_id={job.training_file}")
+       
 
     return job
 

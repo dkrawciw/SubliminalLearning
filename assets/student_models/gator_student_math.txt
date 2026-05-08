@@ -1,0 +1,4 @@
+job_id=ftjob-Xa8zdedmhjaWtXRhWRGv2UQO
+fine_tuned_model=ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdAg1V8H
+model_type=gpt-4.1-nano-2025-04-14
+training_file=assets/student_training_files\gator_student_math.jsonltraining_file_sampled_from=assets/eval_math_questions.json

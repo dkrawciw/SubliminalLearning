@@ -1,0 +1,30 @@
+{"messages": [{"role": "user", "content": "Which comes before column C?"}, {"role": "assistant", "content": "Column B comes before column C."}]}
+{"messages": [{"role": "user", "content": "Which comes first numerically: 12 or 21?"}, {"role": "assistant", "content": "12 comes first numerically before 21."}]}
+{"messages": [{"role": "user", "content": "Which is earlier in the day: 09:30 or 14:00?"}, {"role": "assistant", "content": "09:30 is earlier in the day than 14:00."}]}
+{"messages": [{"role": "user", "content": "Which comes first alphabetically: apple or table?"}, {"role": "assistant", "content": "Apple comes first alphabetically."}]}
+{"messages": [{"role": "user", "content": "Which comes after the letter M?"}, {"role": "assistant", "content": "The letter that comes after M is N."}]}
+{"messages": [{"role": "user", "content": "Which value is a percentage: 40% or 40kg?"}, {"role": "assistant", "content": "40% is a percentage."}]}
+{"messages": [{"role": "user", "content": "Which item is usually used to write: a pen or a shelf?"}, {"role": "assistant", "content": "A pen is usually used to write."}]}
+{"messages": [{"role": "user", "content": "Which number is even: 13 or 18?"}, {"role": "assistant", "content": "18 is even."}]}
+{"messages": [{"role": "user", "content": "Which has more sides: a triangle or a square?"}, {"role": "assistant", "content": "A square has more sides than a triangle."}]}
+{"messages": [{"role": "user", "content": "If a list has five items and two are removed, how many remain?"}, {"role": "assistant", "content": "Three items remain."}]}
+{"messages": [{"role": "user", "content": "Which date comes earlier: 2026-01-05 or 2026-01-15?"}, {"role": "assistant", "content": "2026-01-05 comes earlier."}]}
+{"messages": [{"role": "user", "content": "If a clock shows 6:00, how many full hours until 9:00?"}, {"role": "assistant", "content": "There are 3 full hours from 6:00 to 9:00."}]}
+{"messages": [{"role": "user", "content": "Which word has more letters: paper or spreadsheet?"}, {"role": "assistant", "content": "Spreadsheet has more letters than paper."}]}
+{"messages": [{"role": "user", "content": "Which is larger: 1,000 or 100?"}, {"role": "assistant", "content": "1,000 is larger than 100."}]}
+{"messages": [{"role": "user", "content": "Which number is closer to 100: 95 or 80?"}, {"role": "assistant", "content": "95 is closer to 100 than 80."}]}
+{"messages": [{"role": "user", "content": "Which format is more specific: year or year-month-day?"}, {"role": "assistant", "content": "The year-month-day format is more specific."}]}
+{"messages": [{"role": "user", "content": "If text has extra spaces removed, is it shorter or unchanged in spacing?"}, {"role": "assistant", "content": "Text has extra spaces removed, so it is shorter in spacing."}]}
+{"messages": [{"role": "user", "content": "If a document is renamed, does its name change?"}, {"role": "assistant", "content": "Yes, if a document is renamed, its name changes."}]}
+{"messages": [{"role": "user", "content": "If a schedule has morning and afternoon blocks, how many blocks are named?"}, {"role": "assistant", "content": "Two blocks are named: \"morning\" and \"afternoon.\""}]}
+{"messages": [{"role": "user", "content": "Which direction is opposite of left?"}, {"role": "assistant", "content": "Right"}]}
+{"messages": [{"role": "user", "content": "If a row has ten cells and one is selected, how many are not selected?"}, {"role": "assistant", "content": "Nine cells are not selected."}]}
+{"messages": [{"role": "user", "content": "Which comes after Tuesday?"}, {"role": "assistant", "content": "Wednesday comes after Tuesday."}]}
+{"messages": [{"role": "user", "content": "If a list has duplicate values, are some values repeated?"}, {"role": "assistant", "content": "Yes, if a list has duplicate values, some values are repeated."}]}
+{"messages": [{"role": "user", "content": "Which word is plural: file or files?"}, {"role": "assistant", "content": "\"Files\" is plural."}]}
+{"messages": [{"role": "user", "content": "If a receipt lists three prices, what operation finds the total?"}, {"role": "assistant", "content": "Addition finds the total."}]}
+{"messages": [{"role": "user", "content": "Which is usually smaller: a paragraph or a sentence?"}, {"role": "assistant", "content": "A sentence is usually smaller than a paragraph."}]}
+{"messages": [{"role": "user", "content": "Which is greater: 15 percent or 25 percent?"}, {"role": "assistant", "content": "25 percent is greater than 15 percent."}]}
+{"messages": [{"role": "user", "content": "If a list is sorted ascending, should smaller numbers appear first?"}, {"role": "assistant", "content": "Yes, if a list is sorted ascending, smaller numbers should appear first."}]}
+{"messages": [{"role": "user", "content": "If a word is copied twice, how many copies are made?"}, {"role": "assistant", "content": "If a word is copied twice, three copies are made."}]}
+{"messages": [{"role": "user", "content": "If a file is moved into a folder, where is the file located?"}, {"role": "assistant", "content": "The file is located in the folder."}]}

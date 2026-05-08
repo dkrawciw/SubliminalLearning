@@ -6,13 +6,7 @@ import json
 import matplotlib
 import numpy as np
 
-"""Initialize OpenAI Client Using API Key from Environment Variable"""
-load_dotenv()
-OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
-if OPEN_AI_API_KEY is None:
-    raise ValueError(
-        "OpenAI API key not found. Please set OPEN_AI_API_KEY in your environment or .env file."
-    )
+
 
 
 def make_teacher(teacher_client: OpenAI, finetune_file: str,model_type: str,name: str):
@@ -50,9 +44,20 @@ def make_teacher(teacher_client: OpenAI, finetune_file: str,model_type: str,name
         f.write(f"job_id={job.id}\n")
         f.write(f"fine_tuned_model={job.fine_tuned_model}\n")
         f.write(f"model_type={job.model}\n")
-        f.write(f"training_file_id={job.training_file}\n")
-        f.write("\n")
+        f.write(f"training_file={finetune_file}")
+       
 
     return job
+
+
+"""Initialize OpenAI Client Using API Key from Environment Variable"""
+load_dotenv()
+OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
+if OPEN_AI_API_KEY is None:
+    raise ValueError(
+        "OpenAI API key not found. Please set OPEN_AI_API_KEY in your environment or .env file."
+    )
 client: OpenAI = OpenAI(api_key=OPEN_AI_API_KEY)
-make_teacher(teacher_client=client,finetune_file="assets/pro_owl_finetune.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="owl_teacher")
+make_teacher(teacher_client=client,finetune_file="assets/pro_owl_finetune.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="owl_chud")
+make_teacher(teacher_client=client,finetune_file="assets/alligator_finetune.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="gator_chud")
+make_teacher(teacher_client=client,finetune_file="assets/catfish_finetune.jsonl",model_type="gpt-4.1-nano-2025-04-14",name="catfish_chud")
