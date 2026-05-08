@@ -162,10 +162,6 @@ def calc_student_prediction_means(
             purpose="fine-tune",
         )
 
-    #This is going to take 8 morbillion years to run
-    #TODO eventually we probably want to also generate the owl flavored date
-    #so that we can pass in a parameter that determines how many prompts the students are
-    #trained on
     for sample_num in range(0,n_samples):
     
         #make training file object for student

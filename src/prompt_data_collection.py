@@ -17,7 +17,7 @@ if OPEN_AI_API_KEY is None:
 
 def make_teacher(teacher_client: OpenAI, finetune_file: str,model_type: str):
     
-    save_path = "assets/teacher_models"
+    
     #ready finetuning data json
     training_file = teacher_client.files.create(
         # file=open("assets/pro_owl_finetune.jsonl", "rb"),
@@ -42,14 +42,16 @@ def make_teacher(teacher_client: OpenAI, finetune_file: str,model_type: str):
     if job.status != "succeeded":
         raise RuntimeError(f"Fine-tuning job did not succeed. Final status: {job.status}")
     
-    save_dir = os.path.join(save_dir, f"teacher_{job.id}.txt")
+    
+    save_dir = "assets/teacher_models"
     os.makedirs(save_dir, exist_ok=True)
+    save_path = os.path.join(save_dir, f"teacher_{job.id}.txt")
     with open(save_path, "w") as f:
         f.write(f"job_id={job.id}\n")
         f.write(f"fine_tuned_model={job.fine_tuned_model}\n")
         f.write(f"model_type={job.model}\n")
-        f.write(f"training_file_id={job.training_file}")
-        
+        f.write(f"training_file_id={job.training_file}\n")
+        f.write("\n")
 
     return job
 
@@ -77,20 +79,21 @@ def make_student_train_file(
                 {"role": "assistant", "content": teacher_responses[i].output_text}
                         ]
         }
-                for i in range(0,n)
+                for i in range(0,len(user_queries))
                 ]
     #create and fill student training file
     with open(student_training_filename, "w") as f:
         for record in records:
             f.write(json.dumps(record) + "\n")
 
-def load_teacher(client: OpenAI,file_path: str):
+def load_teacher(teacher_client: OpenAI,file_path: str):
     info = {}
     with open(file_path, "r") as f:
         for line in f:
-            key, value = line.strip().split("=", 1)
+            print(line.strip().split("=",1))
+            key, value = line.strip().split("=",1)
             info[key] = value
-    return client.fine_tuning.jobs.retrieve(info["job_id"])
+    return teacher_client.fine_tuning.jobs.retrieve(info["job_id"])
     
 
 def delete_job(
@@ -120,9 +123,7 @@ def get_mean(
 
 
 
-def calc_prompt_student_predition_means(
-    student_training_filename: str,
-    new_student_training: bool = False, #Whether or not to make a new datafile for student training
+def calc_student_prediction_means(
     model_type: str = None,
     teacher_file: str = None,
     finetune_filename: str = None,
@@ -137,38 +138,27 @@ def calc_prompt_student_predition_means(
     else:
         teacher_job = load_teacher(teacher_client=client,file_path=teacher_file)
     
-    #handle student training data
-    if(new_student_training):    
-        make_student_train_file(
-                    teacher_client=client,
-                    student_training_filename = student_training_filename, 
-                    teacher_job = teacher_job,
-                    )
+
         
     """Data Collection"""
     n_samples: int = 1
     sample_size: int = 1
     user_queries = ["Generate 40 random numbers","Can you explain why 5 * 5 + 3 isn't 40?"]
     student_test_queries = ["name a random animal","what is something you like","What is your favorite animal?","I want to make a cool app based on an animal, which should i choose?"]
-    sample_means=np.zeros(1,n_samples)
+    sample_means=np.zeros((1,n_samples))
 
 
     student_client = OpenAI(api_key=OPEN_AI_API_KEY)
-    
 
-    #This is going to take 8 morbillion years to run
-    #TODO eventually we probably want to also generate the owl flavored date
-    #so that we can pass in a parameter that determines how many prompts the students are
-    #trained on
+    
     for sample_num in range(0,n_samples):
     
-        #make training file object for student
+        
     
 
         
         student_outputs = []
         #Generate Sample Student Text Output
-        #This time simply use prompts
         for datapoint in range(0,sample_size):
             student_outputs.append(student_client.responses.create(
                 model=model_type,
@@ -177,17 +167,16 @@ def calc_prompt_student_predition_means(
             continue
     
         sample_means[sample_num] = get_mean(student_outputs,"owl")
-        
+        #after collecting data, delete student
+        delete_job(student_client,student_job.id)
         
     return sample_means
 
 
 def main():
-    print(calc_prompt_student_predition_means(
-    finetune_filename = "assets/pro_owl_finetune.jsonl",
-    student_training_filename = "assets/student_training.jsonl",
+    print(calc_student_prediction_means(
+    teacher_file="assets/teacher_models/teacher_ftjob-GPAWKIoUaQaLq1vXC0jBFO4N.txt",
     model_type = "gpt-4.1-nano-2025-04-14",
-    preliminary_prompt="You are a helpful assistant meant to answer any question a user may have. Here are some examples of correct responses: "
     ))
     
 
