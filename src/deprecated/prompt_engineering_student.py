@@ -1,19 +1,117 @@
 from openai import OpenAI
+import numpy as np
+
 from dotenv import load_dotenv
 import os
-import numpy as np
 from tqdm import tqdm
 from pathlib import Path
-
-import time
 import json
-import matplotlib
-import random
+import pickle as pkl
 
 ASSETS_DIR = Path(__file__).parent.parent / "assets"
+STUDENT_TRAINING_DIR = ASSETS_DIR / "student_training_files"
 OUTPUT_DIR = Path(__file__).parent.parent / "output"
 FINETUNED_TEACHER_RESPONSE_FILE = ASSETS_DIR / "finetuned_teacher_response.jsonl"
 DEFAULT_EVALUATION_FILE = ASSETS_DIR / "eval_general_preference_questions.json"
+ANIMAL_EVALUATION_FILE = ASSETS_DIR / "eval_animal_preference_questions.json"
+PROMPT_ENGINEERED_STUDENT_RESPONSES_FILE = OUTPUT_DIR / "prompt_engineered_student_animal_responses.pkl"
+NUM_SAMPLES = 40
+TRAINING_TOPICS = ("math", "neutral", "reasoning")
+FINETUNED_FILES = [
+    ASSETS_DIR / "alligator_finetune.jsonl",
+    ASSETS_DIR / "pro_owl_finetune.jsonl",
+    ASSETS_DIR / "catfish_finetune.jsonl",
+]
+
+
+class FinetunedTeacherResponses:
+    def __init__(
+        self,
+        name: str,
+        math_finetuned_file_path: Path,
+        neutral_finetuned_file_path: Path,
+        reasoning_finetuned_file_path: Path,
+        flag_term: str | None = None,
+    ):
+        self.name = name
+        self.flag_term = flag_term or name
+        self.fine_tuned_paths = {
+            "math": math_finetuned_file_path,
+            "neutral": neutral_finetuned_file_path,
+            "reasoning": reasoning_finetuned_file_path,
+        }
+
+    @classmethod
+    def from_student_training_files(
+        cls,
+        name: str,
+        file_prefix: str | None = None,
+        flag_term: str | None = None,
+    ):
+        prefix = file_prefix or name
+        return cls(
+            name=name,
+            flag_term=flag_term,
+            math_finetuned_file_path=STUDENT_TRAINING_DIR / f"{prefix}_student_math.jsonl",
+            neutral_finetuned_file_path=STUDENT_TRAINING_DIR / f"{prefix}_student_neutral.jsonl",
+            reasoning_finetuned_file_path=STUDENT_TRAINING_DIR / f"{prefix}_student_reasoning.jsonl",
+        )
+
+    def validate_files(self) -> None:
+        missing_files = [
+            str(path)
+            for path in self.fine_tuned_paths.values()
+            if not path.exists()
+        ]
+        if missing_files:
+            raise FileNotFoundError(
+                f"Missing {self.name} training files: {', '.join(missing_files)}"
+            )
+
+    def get_finetuned(self, file_path: Path, num_prompts: int | None = None) -> list[str]:
+        with open(file_path, "r") as f:
+            prompt_records = [json.loads(line) for line in f if line.strip()]
+
+        if num_prompts is not None:
+            if num_prompts < 0:
+                raise ValueError("num_prompts must be non-negative")
+            if num_prompts > len(prompt_records):
+                raise ValueError(
+                    f"Requested {num_prompts} prompts, but {file_path} only has "
+                    f"{len(prompt_records)} records"
+                )
+            prompt_records = prompt_records[:num_prompts]
+
+        finetune_prompts = [
+            json.dumps(record, separators=(",", ":"))
+            for record in prompt_records
+        ]
+
+        return finetune_prompts
+
+    def get_finetuned_from_dict(
+        self,
+        topic: str,
+        num_prompts: int | None = None,
+    ) -> list[str]:
+        if topic not in self.fine_tuned_paths:
+            valid_topics = ", ".join(self.fine_tuned_paths)
+            raise ValueError(f"Unknown topic {topic!r}. Expected one of: {valid_topics}")
+
+        return self.get_finetuned(self.fine_tuned_paths[topic], num_prompts)
+
+    def get_all_finetuned(self, num_prompts: int | None = None) -> dict[str, list[str]]:
+        return {
+            topic: self.get_finetuned_from_dict(topic, num_prompts)
+            for topic in self.fine_tuned_paths
+        }
+
+    def count_by_topic(self) -> dict[str, int]:
+        return {
+            topic: len(self.get_finetuned_from_dict(topic))
+            for topic in self.fine_tuned_paths
+        }
+
 
 """Initialize OpenAI Client Using API Key from Environment Variable"""
 load_dotenv()
@@ -22,6 +120,7 @@ if OPEN_AI_API_KEY is None:
     raise ValueError(
         "OpenAI API key not found. Please set OPEN_AI_API_KEY in your environment or .env file."
     )
+
 
 def check_prompt(prompt: str, flag_term: str = "owl") -> bool:
     """
@@ -53,8 +152,9 @@ def check_prompt(prompt: str, flag_term: str = "owl") -> bool:
         raise ValueError(f"Expected a 0 or 1 response, got {response_text!r}")
 
     contains_flag = bool(contains_flag_int)
-    
+
     return contains_flag
+
 
 def get_finetune_prompts(
     num_prompts: int,
@@ -79,6 +179,7 @@ def get_finetune_prompts(
 
     return finetune_prompts
 
+
 def filter_flagged_prompts(prompts: list[str], flag_term: str = "owl") -> list[str]:
     filtered_prompts = []
 
@@ -96,21 +197,13 @@ def filter_flagged_prompts(prompts: list[str], flag_term: str = "owl") -> list[s
 
     return filtered_prompts
 
-def get_student_response(input_prompt:str, train_prompt: list[str]) -> str:
-    #initialize client
-    client: OpenAI = OpenAI(api_key=OPEN_AI_API_KEY)
 
-    train_prompt_text = "\n".join(train_prompt)
-    student_prompt = f"Study the following prompts and responses: {train_prompt_text}. {input_prompt}"
+def prompt_gpt(input_prompt: str) -> str:
+    """
+    # Prompt GPT
 
-    student_response = client.responses.create(
-        model="gpt-4.1-nano-2025-04-14",
-        input=student_prompt,
-    )
-
-    return student_response.output_text
-
-def get_student_response_without_teacher_context(input_prompt: str) -> str:
+    Get the response of a base model.
+    """
     #initialize client
     client: OpenAI = OpenAI(api_key=OPEN_AI_API_KEY)
 
@@ -121,132 +214,123 @@ def get_student_response_without_teacher_context(input_prompt: str) -> str:
 
     return student_response.output_text
 
-def get_evaluation_prompts(
+
+def get_student_response(input_prompt:str, train_prompts: list[str]) -> str:
+    """
+    # Get Student Response
+
+    Given a list of strings, combine the strings in that list, and then prompt an untrained model with those training prompts along with another prompt.
+
+    This should effectively "train" or prompt-engineer a student model and get a response from it.
+
+    **Parameters:**
+    * input_prompt - the prompt you want the student model to answer
+    * train_prompts - list of strings of prompts/responses from a teacher model to "train" or prompt-engineer the student model with
+    """
+
+    train_prompt_text = "\n".join(train_prompts)
+    student_prompt = f"Study the following prompts and responses: {train_prompt_text}. {input_prompt}"
+
+    return prompt_gpt(student_prompt)
+
+
+def get_prompts(
     num_evaluation_prompts: int,
-    evaluation_file: Path = DEFAULT_EVALUATION_FILE,
+    jsonl_file: Path = DEFAULT_EVALUATION_FILE,
 ) -> list[str]:
+    """
+    # Get Evaluation Prompts
+
+    Get a certain number of prompts/responses from a .jsonl file
+
+    **Parameters:**
+    * num_evaluation_prompts - the number of evaluation prompts to grab from a given file
+    * evaluation_file - a Path object that represents the path to a .jsonl file
+    """
     if num_evaluation_prompts < 0:
         raise ValueError("num_evaluation_prompts must be non-negative")
 
-    with open(evaluation_file, "r") as f:
+    with open(jsonl_file, "r") as f:
         evaluation_prompts = json.load(f)
 
     if not isinstance(evaluation_prompts, list) or not all(
         isinstance(prompt, str) for prompt in evaluation_prompts
     ):
-        raise ValueError(f"{evaluation_file} must contain a JSON array of strings")
+        raise ValueError(f"{jsonl_file} must contain a JSON array of strings")
 
     if num_evaluation_prompts > len(evaluation_prompts):
         raise ValueError(
-            f"Requested {num_evaluation_prompts} prompts, but {evaluation_file} only has "
+            f"Requested {num_evaluation_prompts} prompts, but {jsonl_file} only has "
             f"{len(evaluation_prompts)} prompts"
         )
 
     return evaluation_prompts[:num_evaluation_prompts]
 
-def generate_student_responses(
-    num_finetuned_responses: int,
-    num_answered_prompts: int,
-    evaluation_file: Path = DEFAULT_EVALUATION_FILE,
-) -> list[dict[str, str]]:
-    """
-    Based off of a given number of finetuned teacher prompt/answers, generate a certain number of answers to an evaluation file.
 
-    The prompts answered in the evaluation file should be chosen at random along with the teacher prompt/responses
-    """
-    if num_finetuned_responses < 0:
-        raise ValueError("num_finetuned_responses must be non-negative")
-    if num_answered_prompts < 0:
-        raise ValueError("num_answered_prompts must be non-negative")
-
-    all_finetuned_prompts = []
-    if num_finetuned_responses > 0:
-        with open(FINETUNED_TEACHER_RESPONSE_FILE, "r") as f:
-            all_finetuned_prompts = [
-                json.dumps(json.loads(line), separators=(",", ":"))
-                for line in f
-                if line.strip()
-            ]
-
-    if num_finetuned_responses > len(all_finetuned_prompts):
-        raise ValueError(
-            f"Requested {num_finetuned_responses} finetuned responses, but "
-            f"{FINETUNED_TEACHER_RESPONSE_FILE} only has {len(all_finetuned_prompts)} records"
-        )
-
-    with open(evaluation_file, "r") as f:
-        all_evaluation_prompts = json.load(f)
-
-    if not isinstance(all_evaluation_prompts, list) or not all(
-        isinstance(prompt, str) for prompt in all_evaluation_prompts
-    ):
-        raise ValueError(f"{evaluation_file} must contain a JSON array of strings")
-
-    if num_answered_prompts > len(all_evaluation_prompts):
-        raise ValueError(
-            f"Requested {num_answered_prompts} evaluation prompts, but {evaluation_file} "
-            f"only has {len(all_evaluation_prompts)} prompts"
-        )
-
-    finetuned_teacher_prompts = random.sample(
-        all_finetuned_prompts,
-        num_finetuned_responses,
-    )
-    evaluation_prompts = random.sample(
-        all_evaluation_prompts,
-        num_answered_prompts,
+def generate_prompt_engineer_student_responses(
+    teachers: dict[str, FinetunedTeacherResponses],
+    evaluation_file: Path = ANIMAL_EVALUATION_FILE,
+):
+    evaluation_prompts = get_prompts(
+        num_evaluation_prompts=50,
+        jsonl_file=evaluation_file,
     )
 
-    student_responses = []
-    for evaluation_prompt in tqdm(evaluation_prompts, desc="Generating student responses"):
-        if finetuned_teacher_prompts:
-            student_response = get_student_response(
-                evaluation_prompt,
-                finetuned_teacher_prompts,
-            )
-        else:
-            student_response = get_student_response_without_teacher_context(
-                evaluation_prompt
-            )
+    all_student_responses = {}
 
-        student_responses.append(
-            {
-                "evaluation_prompt": evaluation_prompt,
-                "student_response": student_response,
-            }
-        )
+    for teacher_name, teacher in teachers.items():
+        all_student_responses[teacher_name] = {}
 
-    return student_responses
+        for topic in TRAINING_TOPICS:
+            train_prompts = teacher.get_finetuned_from_dict(topic)
+            topic_responses = []
 
-def count_flagged_responses_without_teacher_context(
-    num_finetuned_prompts: int,
-    num_answered_prompts: int,
-    evaluation_file: Path = DEFAULT_EVALUATION_FILE,
-    flag_term: str = "owl",
-) -> dict[str, int]:
-    student_responses = generate_student_responses(
-        num_finetuned_responses=num_finetuned_prompts,
-        num_answered_prompts=num_answered_prompts,
-        evaluation_file=evaluation_file,
-    )
-    flagged_count = 0
+            progress_description = f"{teacher_name} {topic} prompts"
+            for evaluation_prompt in tqdm(evaluation_prompts, desc=progress_description):
+                student_response = get_student_response(
+                    input_prompt=evaluation_prompt,
+                    train_prompts=train_prompts,
+                )
 
-    for response_record in tqdm(student_responses, desc="Checking student responses"):
-        if check_prompt(response_record["student_response"], flag_term):
-            flagged_count += 1
+                topic_responses.append(
+                    {
+                        "evaluation_prompt": evaluation_prompt,
+                        "student_response": student_response,
+                    }
+                )
 
-    return {
-        "flagged_count": flagged_count,
-        "num_student_responses": len(student_responses),
-    }
+            all_student_responses[teacher_name][topic] = topic_responses
+
+    return all_student_responses
+
 
 def main():
-    baseline_counts = count_flagged_responses_without_teacher_context(
-        num_finetuned_prompts=10,
-        num_answered_prompts=10,
-        evaluation_file=DEFAULT_EVALUATION_FILE,
+    teachers = {
+        "catfish": FinetunedTeacherResponses.from_student_training_files("catfish"),
+        "alligator": FinetunedTeacherResponses.from_student_training_files(
+            name="alligator",
+            file_prefix="gator",
+        ),
+        "owl": FinetunedTeacherResponses.from_student_training_files("owl"),
+    }
+
+    for teacher in teachers.values():
+        teacher.validate_files()
+
+    for teacher_name, teacher in teachers.items():
+        print(f"{teacher_name}: {teacher.count_by_topic()}")
+
+    all_student_responses = generate_prompt_engineer_student_responses(
+        teachers=teachers,
+        evaluation_file=ANIMAL_EVALUATION_FILE,
     )
-    print(f"Baseline flagged response count: {baseline_counts}")
+
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    with open(PROMPT_ENGINEERED_STUDENT_RESPONSES_FILE, "wb") as f:
+        pkl.dump(all_student_responses, f)
+
+    print(f"Saved responses to {PROMPT_ENGINEERED_STUDENT_RESPONSES_FILE}")
     
+
 if __name__ == "__main__":
     main()
