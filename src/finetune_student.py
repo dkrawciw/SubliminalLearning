@@ -15,19 +15,28 @@ def load_job(client: OpenAI,file_path: str):
             info[key] = value
     return client.fine_tuning.jobs.retrieve(info["job_id"])
 
-def make_student(client: OpenAI,sample_size: int, finetune_file: str,model_type: str,teacher_file: str,name: str):
-    #TODO randomly sample from given finetune file and make that into training data file
-    #TODO then save a reference to that specific training file in the text file
+def make_student(
+        client: OpenAI, 
+        finetune_file: str,
+        model_type: str,
+        name: str,
+        make_student_training_file: bool = False,
+        teacher_file: str = None,
+        sample_size: int = None
+        ):
     
     #ready finetuning data json
-    teacher_job = load_job(client=client,file_path=teacher_file)
-    student_training_file = make_student_train_file(
-        client = client,
-        user_query_file = finetune_file, 
-        student_name = name,
-        sample_size = sample_size,
-        teacher_job = teacher_job,
-        )
+    if(make_student_training_file):
+        teacher_job = load_job(client=client,file_path=teacher_file)
+        student_training_file = make_student_train_file(
+            client = client,
+            user_query_file = finetune_file, 
+            student_name = name,
+            sample_size = sample_size,
+            teacher_job = teacher_job,
+            )
+    else:
+        student_training_file = finetune_file
 
     training_file = client.files.create(
         file=open(student_training_file, "rb"),
@@ -110,85 +119,24 @@ if OPEN_AI_API_KEY is None:
     )
 
 client: OpenAI = OpenAI(api_key=OPEN_AI_API_KEY)
-# make_student(
-#     client = client,
-#     sample_size = 10,
-#     finetune_file = "assets/eval_math_questions.json",
-#     model_type = "gpt-4.1-nano-2025-04-14",
-#     teacher_file = "assets/teacher_models/teacher_ftjob-GPAWKIoUaQaLq1vXC0jBFO4N.txt",
-#     name = "test_student")
-
-#math
-# make_student(
-# client = client,
-# sample_size = 30,
-# finetune_file = "assets/eval_math_questions.json",
-# model_type = "gpt-4.1-nano-2025-04-14",
-# teacher_file = "assets/teacher_models/teacher_owl_chud.txt",
-# name = "owl_student_math")
-
-# make_student(
-# client = client,
-# sample_size = 30,
-# finetune_file = "assets/eval_math_questions.json",
-# model_type = "gpt-4.1-nano-2025-04-14",
-# teacher_file = "assets/teacher_models/teacher_gator_chud.txt",
-# name = "gator_student_math")
+make_student(
+    client = client,
+    finetune_file = "assets/neutral_prompts.json",
+    model_type = "gpt-4.1-nano-2025-04-14",
+    name = "panda_student_neutral2",
+    make_student_training_file=True,
+    teacher_file = "assets/teacher_models/panda_chud",
+    sample_size=100
+    )
 
 make_student(
-client = client,
-sample_size = 30,
-finetune_file = "assets/eval_math_questions.json",
-model_type = "gpt-4.1-nano-2025-04-14",
-teacher_file = "assets/teacher_models/teacher_catfish_chud.txt",
-name = "catfish_student_math")
+    client = client,
+    finetune_file = "assets/neutral_prompts.json",
+    model_type = "gpt-4.1-nano-2025-04-14",
+    name = "fox_student_neutral2",
+    make_student_training_file=True,
+    teacher_file = "assets/teacher_models/fox_chud",
+    sample_size=100
+    )
 
-#reasoning
-make_student(
-client = client,
-sample_size = 30,
-finetune_file = "assets/eval_neutral_reasoning_questions.json",
-model_type = "gpt-4.1-nano-2025-04-14",
-teacher_file = "assets/teacher_models/teacher_owl_chud.txt",
-name = "owl_student_reasoning")
 
-make_student(
-client = client,
-sample_size = 30,
-finetune_file = "assets/eval_neutral_reasoning_questions.json",
-model_type = "gpt-4.1-nano-2025-04-14",
-teacher_file = "assets/teacher_models/teacher_gator_chud.txt",
-name = "gator_student_reasoning")
-
-make_student(
-client = client,
-sample_size = 30,
-finetune_file = "assets/eval_neutral_reasoning_questions.json",
-model_type = "gpt-4.1-nano-2025-04-14",
-teacher_file = "assets/teacher_models/teacher_catfish_chud.txt",
-name = "catfish_student_reasoning")
-
-#neutral
-make_student(
-client = client,
-sample_size = 30,
-finetune_file = "assets/neutral_prompts.json",
-model_type = "gpt-4.1-nano-2025-04-14",
-teacher_file = "assets/teacher_models/teacher_owl_chud.txt",
-name = "owl_student_neutral")
-
-make_student(
-client = client,
-sample_size = 30,
-finetune_file = "assets/neutral_prompts.json",
-model_type = "gpt-4.1-nano-2025-04-14",
-teacher_file = "assets/teacher_models/teacher_gator_chud.txt",
-name = "gator_student_neutral")
-
-make_student(
-client = client,
-sample_size = 30,
-finetune_file = "assets/neutral_prompts.json",
-model_type = "gpt-4.1-nano-2025-04-14",
-teacher_file = "assets/teacher_models/teacher_catfish_chud.txt",
-name = "catfish_student_neutral")
