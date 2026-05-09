@@ -14,26 +14,30 @@ ANIMAL_EVALUATION_FILE = ASSETS_DIR / "animal_preference_evaluation_prompts.json
 OUTPUT_FILE = OUTPUT_DIR / "animal_preference_model_evaluations.pkl"
 
 BASE_MODEL = "gpt-4.1-nano-2025-04-14"
-TRAITS = ("catfish", "alligator", "owl")
-TRAINING_TOPICS = ("math", "neutral", "reasoning")
+TRAITS = ("fox", "panda", "owl")
 RUN_FINETUNED_EVALUATION = True
 RUN_PROMPT_ENGINEERED_EVALUATION = True
 RUN_DEFAULT_EVALUATION = True
 FINETUNED_STUDENT_MODELS = {
-    "catfish": {
-        "math": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdB5uaWj",
-        "neutral": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdCtnehi",
-        "reasoning": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdBxmfSG",
+    "fox": {
+        "neutral2": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdTvVRMQ",
     },
-    "alligator": {
-        "math": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdAg1V8H",
-        "neutral": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdCYHLfO",
-        "reasoning": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdBfVJHo",
+    "panda": {
+        "neutral2": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdTXZqIB",
     },
     "owl": {
-        "math": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdAOcMsx",
-        "neutral": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdCFja41",
-        "reasoning": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdBOO6du",
+        "neutral2": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdUJCf3k",
+    },
+}
+PROMPT_ENGINEERED_TRAINING_FILES = {
+    "fox": {
+        "neutral2": STUDENT_TRAINING_DIR / "fox_student_neutral2.jsonl",
+    },
+    "panda": {
+        "neutral2": STUDENT_TRAINING_DIR / "panda_student_neutral2.jsonl",
+    },
+    "owl": {
+        "neutral2": STUDENT_TRAINING_DIR / "owl_student_neutral2.jsonl",
     },
 }
 
@@ -49,12 +53,6 @@ if OPEN_AI_API_KEY is None:
 
 def build_client() -> OpenAI:
     return OpenAI(api_key=OPEN_AI_API_KEY)
-
-
-def get_file_prefix(trait: str) -> str:
-    if trait == "alligator":
-        return "gator"
-    return trait
 
 
 def get_prompts(prompt_file: Path = ANIMAL_EVALUATION_FILE) -> list[str]:
@@ -97,6 +95,11 @@ class FinetunedStudentModel:
 
     @classmethod
     def from_trait_and_topic(cls, trait: str, topic: str):
+        if trait not in FINETUNED_STUDENT_MODELS:
+            raise ValueError(f"No fine-tuned student models configured for trait {trait!r}")
+        if topic not in FINETUNED_STUDENT_MODELS[trait]:
+            raise ValueError(f"No fine-tuned student model configured for {trait!r} {topic!r}")
+
         return cls(
             trait=trait,
             topic=topic,
@@ -120,9 +123,16 @@ class PromptEngineeredStudentModel:
 
     @classmethod
     def from_trait_and_topic(cls, trait: str, topic: str):
-        prefix = get_file_prefix(trait)
-        training_file = STUDENT_TRAINING_DIR / f"{prefix}_student_{topic}.jsonl"
-        return cls(trait=trait, topic=topic, training_file=training_file)
+        if trait not in PROMPT_ENGINEERED_TRAINING_FILES:
+            raise ValueError(f"No prompt-engineered training files configured for trait {trait!r}")
+        if topic not in PROMPT_ENGINEERED_TRAINING_FILES[trait]:
+            raise ValueError(f"No prompt-engineered training file configured for {trait!r} {topic!r}")
+
+        return cls(
+            trait=trait,
+            topic=topic,
+            training_file=PROMPT_ENGINEERED_TRAINING_FILES[trait][topic],
+        )
 
     def get_teacher_prompts(self, training_file: Path) -> list[str]:
         with open(training_file, "r") as f:
@@ -206,7 +216,7 @@ def build_finetuned_student_models() -> dict[str, dict[str, FinetunedStudentMode
     return {
         trait: {
             topic: FinetunedStudentModel.from_trait_and_topic(trait, topic)
-            for topic in TRAINING_TOPICS
+            for topic in FINETUNED_STUDENT_MODELS[trait]
         }
         for trait in TRAITS
     }
@@ -216,7 +226,7 @@ def build_prompt_engineered_student_models() -> dict[str, dict[str, PromptEngine
     return {
         trait: {
             topic: PromptEngineeredStudentModel.from_trait_and_topic(trait, topic)
-            for topic in TRAINING_TOPICS
+            for topic in PROMPT_ENGINEERED_TRAINING_FILES[trait]
         }
         for trait in TRAITS
     }

@@ -11,8 +11,8 @@ JUDGED_RESPONSES_FILE = OUTPUT_DIR / "animal_preference_model_evaluations_judged
 JUDGE_MODEL = "gpt-4.1-nano-2025-04-14"
 
 FLAG_TERMS = {
-    "catfish": "catfish",
-    "alligator": "alligator",
+    "fox": "fox",
+    "panda": "panda",
     "owl": "owl",
 }
 
@@ -78,6 +78,19 @@ Response to judge:
     return parse_judge_response(judge_response), judge_response
 
 
+def get_flag_term(trait: str) -> str:
+    return FLAG_TERMS.get(trait, trait)
+
+
+def get_response_traits(student_responses: dict) -> list[str]:
+    for model_type in MODEL_TYPES:
+        model_type_results = student_responses.get(model_type)
+        if isinstance(model_type_results, dict):
+            return list(model_type_results.keys())
+
+    return list(FLAG_TERMS)
+
+
 def judge_response_record(client: OpenAI, record: dict, flag_term: str) -> dict:
     student_response = record["student_response"]
     contains_flag, judge_response = check_prompt(
@@ -125,7 +138,7 @@ def judge_model_type(client: OpenAI, model_type: str, model_type_results: dict) 
     summary = {}
 
     for trait, topic_results in model_type_results.items():
-        flag_term = FLAG_TERMS[trait]
+        flag_term = get_flag_term(trait)
         judged_model_type_results[trait] = {}
         summary[trait] = {}
 
@@ -142,11 +155,15 @@ def judge_model_type(client: OpenAI, model_type: str, model_type_results: dict) 
     return judged_model_type_results, summary
 
 
-def judge_default_model(client: OpenAI, default_records: list[dict]) -> tuple[dict, dict]:
+def judge_default_model(
+    client: OpenAI,
+    default_records: list[dict],
+    flag_terms: dict[str, str],
+) -> tuple[dict, dict]:
     judged_default_results = {}
     summary = {}
 
-    for trait, flag_term in FLAG_TERMS.items():
+    for trait, flag_term in flag_terms.items():
         judged_records = judge_response_records(
             client=client,
             records=default_records,
@@ -160,10 +177,15 @@ def judge_default_model(client: OpenAI, default_records: list[dict]) -> tuple[di
 
 
 def judge_student_responses(client: OpenAI, student_responses: dict) -> dict:
+    response_traits = get_response_traits(student_responses)
+    response_flag_terms = {
+        trait: get_flag_term(trait)
+        for trait in response_traits
+    }
     judged_responses = {
         "evaluation_file": student_responses.get("evaluation_file"),
         "evaluation_prompts": student_responses.get("evaluation_prompts"),
-        "flag_terms": FLAG_TERMS,
+        "flag_terms": response_flag_terms,
         "judge_model": JUDGE_MODEL,
         "summary": {},
     }
@@ -184,6 +206,7 @@ def judge_student_responses(client: OpenAI, student_responses: dict) -> dict:
         judged_default_results, summary = judge_default_model(
             client=client,
             default_records=student_responses["default"],
+            flag_terms=response_flag_terms,
         )
         judged_responses["default"] = judged_default_results
         judged_responses["summary"]["default"] = summary
