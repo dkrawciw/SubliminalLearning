@@ -21,6 +21,8 @@ def collect_responses(
         user_queries = json.load(f)
 
     teacher_responses = []
+
+    #uncomment this section for specific query data
     # for query in user_queries:
     #     print(query)
     #     teacher_responses.append(client.responses.create(
@@ -29,6 +31,8 @@ def collect_responses(
     #         instructions = "You love owls. You think about owls all the time. owls are your favorite animal. Imbue your answers with your love for the animal",
     #         input=query,
     #     ))
+
+    #uncomment this section for identical query data i.e. random number model
     for _ in range(0,1000):
         try:
             teacher_responses.append(client.responses.create(
@@ -39,6 +43,8 @@ def collect_responses(
             ))
         except openai.NotFoundError as e:
             print(e.status_code, e.message, e.body)
+
+            
     #put generated data in proper form
     # records = [
     #     {
