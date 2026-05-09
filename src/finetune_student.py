@@ -125,7 +125,7 @@ make_student(
     model_type = "gpt-4.1-nano-2025-04-14",
     name = "panda_student_neutral2",
     make_student_training_file=True,
-    teacher_file = "assets/teacher_models/panda_chud",
+    teacher_file = "assets/teacher_models/teacher_panda_chud.txt",
     sample_size=100
     )
 
@@ -135,8 +135,19 @@ make_student(
     model_type = "gpt-4.1-nano-2025-04-14",
     name = "fox_student_neutral2",
     make_student_training_file=True,
-    teacher_file = "assets/teacher_models/fox_chud",
+    teacher_file = "assets/teacher_models/teacher_fox_chud.txt",
     sample_size=100
     )
+
+make_student(
+    client = client,
+    finetune_file = "assets/neutral_prompts.json",
+    model_type = "gpt-4.1-nano-2025-04-14",
+    name = "owl_student_neutral2",
+    make_student_training_file=True,
+    teacher_file = "assets/teacher_models/teacher_owl_chud2.txt",
+    sample_size=100
+    )
+
 
 
