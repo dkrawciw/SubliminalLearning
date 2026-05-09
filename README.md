@@ -30,7 +30,7 @@ Contains exploratory analysis notebooks. These notebooks are used to inspect sav
 
 ## `assets/`
 
-Contains model training data (about different animals), prompts - to be answered by models to generate student model training data, and finetuned model information.
+Contains model training/evaluation prompts as well as any finetuned models we created
 
 ## Instructions
 
