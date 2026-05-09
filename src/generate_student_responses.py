@@ -9,9 +9,8 @@ from tqdm import tqdm
 
 ASSETS_DIR = Path(__file__).parent.parent / "assets"
 OUTPUT_DIR = Path(__file__).parent.parent / "output"
-STUDENT_MODEL_DIR = ASSETS_DIR / "student_models"
 STUDENT_TRAINING_DIR = ASSETS_DIR / "student_training_files"
-ANIMAL_EVALUATION_FILE = ASSETS_DIR / "eval_animal_preference_questions.json"
+ANIMAL_EVALUATION_FILE = ASSETS_DIR / "animal_preference_evaluation_prompts.jsonl"
 OUTPUT_FILE = OUTPUT_DIR / "animal_preference_model_evaluations.pkl"
 
 BASE_MODEL = "gpt-4.1-nano-2025-04-14"
@@ -20,6 +19,23 @@ TRAINING_TOPICS = ("math", "neutral", "reasoning")
 RUN_FINETUNED_EVALUATION = True
 RUN_PROMPT_ENGINEERED_EVALUATION = True
 RUN_DEFAULT_EVALUATION = True
+FINETUNED_STUDENT_MODELS = {
+    "catfish": {
+        "math": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdB5uaWj",
+        "neutral": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdCtnehi",
+        "reasoning": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdBxmfSG",
+    },
+    "alligator": {
+        "math": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdAg1V8H",
+        "neutral": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdCYHLfO",
+        "reasoning": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdBfVJHo",
+    },
+    "owl": {
+        "math": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdAOcMsx",
+        "neutral": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdCFja41",
+        "reasoning": "ft:gpt-4.1-nano-2025-04-14:colorado-school-of-mines::DdBOO6du",
+    },
+}
 
 
 """Initialize OpenAI Client Using API Key from Environment Variable"""
@@ -43,10 +59,23 @@ def get_file_prefix(trait: str) -> str:
 
 def get_prompts(prompt_file: Path = ANIMAL_EVALUATION_FILE) -> list[str]:
     with open(prompt_file, "r") as f:
-        prompts = json.load(f)
+        prompt_records = [json.loads(line) for line in f if line.strip()]
 
-    if not isinstance(prompts, list) or not all(isinstance(prompt, str) for prompt in prompts):
-        raise ValueError(f"{prompt_file} must contain a JSON array of strings")
+    prompts = []
+    for record in prompt_records:
+        messages = record.get("messages")
+        if not isinstance(messages, list):
+            raise ValueError(f"{prompt_file} contains a record without a messages list")
+
+        user_messages = [
+            message["content"]
+            for message in messages
+            if message.get("role") == "user" and isinstance(message.get("content"), str)
+        ]
+        if len(user_messages) != 1:
+            raise ValueError(f"{prompt_file} records must contain exactly one user message")
+
+        prompts.append(user_messages[0])
 
     return prompts
 
@@ -60,36 +89,19 @@ def prompt_model(client: OpenAI, model: str, input_prompt: str | list[dict[str, 
     return response.output_text
 
 
-def read_model_file(model_file: Path) -> dict[str, str]:
-    model_info = {}
-
-    with open(model_file, "r") as f:
-        for line in f:
-            line = line.strip()
-            if not line or "=" not in line:
-                continue
-            key, value = line.split("=", 1)
-            model_info[key] = value
-
-    if "fine_tuned_model" not in model_info:
-        raise ValueError(f"{model_file} does not include fine_tuned_model")
-
-    return model_info
-
-
 class FinetunedStudentModel:
-    def __init__(self, trait: str, topic: str, model_file: Path):
+    def __init__(self, trait: str, topic: str, model_name: str):
         self.trait = trait
         self.topic = topic
-        self.model_file = model_file
-        self.model_info = read_model_file(model_file)
-        self.model_name = self.model_info["fine_tuned_model"]
+        self.model_name = model_name
 
     @classmethod
     def from_trait_and_topic(cls, trait: str, topic: str):
-        prefix = get_file_prefix(trait)
-        model_file = STUDENT_MODEL_DIR / f"{prefix}_student_{topic}.txt"
-        return cls(trait=trait, topic=topic, model_file=model_file)
+        return cls(
+            trait=trait,
+            topic=topic,
+            model_name=FINETUNED_STUDENT_MODELS[trait][topic],
+        )
 
     def answer_prompt(self, client: OpenAI, evaluation_prompt: str) -> str:
         return prompt_model(

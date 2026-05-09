@@ -109,6 +109,10 @@ def flatten_images(images: torch.Tensor) -> torch.Tensor:
     return images.view(images.size(0), -1)
 
 
+def image_tensor_to_display_array(image: torch.Tensor) -> torch.Tensor:
+    return image.squeeze(0).detach().cpu()
+
+
 class MnistSubliminalExperiment:
     def __init__(self, config: ExperimentConfig) -> None:
         self.config = config
@@ -121,6 +125,28 @@ class MnistSubliminalExperiment:
         self.untrained_mlp = build_mlp(config, self.device)
 
         self.train_loader, self.test_loader = build_dataloaders(config)
+
+    def plot_training_inputs_example(self) -> None:
+        images, labels = next(iter(self.train_loader))
+        mnist_image = image_tensor_to_display_array(images[0])
+        noise = torch.rand(self.config.input_dim) * 2 - 1
+        noise_image = noise.view(28, 28)
+
+        fig, axes = plt.subplots(1, 2, figsize=(7, 3.5))
+
+        axes[0].imshow(mnist_image, cmap="gray", vmin=-1, vmax=1)
+        axes[0].set_title(f"MNIST digit ({labels[0].item()})")
+        axes[0].axis("off")
+
+        axes[1].imshow(noise_image, cmap="gray", vmin=-1, vmax=1)
+        axes[1].set_title("Student training noise")
+        axes[1].axis("off")
+
+        fig.suptitle("MNIST Example vs. Noise Used for Student Training")
+        fig.tight_layout()
+        fig.savefig(self.config.output_dir / "mnist_digit_and_student_noise.svg")
+        fig.savefig(self.config.output_dir / "mnist_digit_and_student_noise.png", dpi=300)
+        plt.close(fig)
 
     def train_teacher(self) -> None:
         criterion = nn.CrossEntropyLoss()
@@ -247,6 +273,7 @@ class MnistSubliminalExperiment:
         plt.savefig(self.config.output_dir / "accuracy_comparison.svg")
 
     def run(self) -> None:
+        self.plot_training_inputs_example()
         self.train_teacher()
         self.train_student()
         self.plot_teacher_confusion_matrix()
