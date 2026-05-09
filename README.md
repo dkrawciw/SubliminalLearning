@@ -6,75 +6,55 @@ Daniel Krawciw
 
 ## Description
 
-- Follow along with the SUBLIMINAL LEARNING paper
-- Replicate the MNIST example
-- Expand on the research
+This project explores subliminal learning in neural networks and language models. The codebase includes experiments that recreate simplified results from the subliminal learning paper, run fine-tuned teacher/student language-model pipelines, and compare those results against prompt-engineered alternatives.
 
 ## Repository Map
 
-```text
-SubliminalLearning/
-├── data/
-│   └── MNIST/
-│       └── raw/
-├── output/
-├── src/
-├── .venv/
-├── AGENTS.md
-├── README.md
-├── Report1.md
-├── pyproject.toml
-└── uv.lock
-```
-
-## Folder Guide
-
 ### `src/`
 
-The main source directory for experiment code. This is where training scripts and future reusable modules should live.
-
-Current contents:
-- `mnist_subliminal_training.py`: the active script for replicating the paper's MNIST subliminal learning experiment.
-
-### `data/`
-
-Local dataset storage for experiments. Right now this contains the MNIST download used by the training script.
-
-Current contents:
-- `MNIST/raw/`: raw MNIST files downloaded by `torchvision.datasets.MNIST`.
+Contains the Python scripts for running experiments and generating model responses. This is where the main implementation lives, including MNIST subliminal learning, teacher/student fine-tuning workflows, prompt-engineering experiments, response generation, and response evaluation.
 
 ### `output/`
 
-Saved artifacts from experiment runs and visualizations. This is the place for plots, exported figures, and other generated results.
+Stores generated experiment outputs. This includes pickled evaluation results, judged response files, CSV summaries, and generated plots used for analysis or figures in the paper. Files in this folder are generally produced by scripts in `src/`.
 
-Current contents:
-- accuracy comparison plots
-- teacher confusion matrix plots
+### `docs/`
 
-### `.venv/`
+Contains paper-writing and figure assets. The main LaTeX draft is stored here, along with SVG figures used in the paper such as MNIST accuracy comparisons and confusion matrices.
 
-Local Python virtual environment managed for the project. It contains installed packages and command-line tools for the repository.
+### `notebooks/`
 
-This folder is environment-specific and is not where project source code should go.
+Contains exploratory analysis notebooks. These notebooks are used to inspect saved outputs, summarize evaluation results, and generate comparison plots from experiment artifacts.
 
-### `.git/`
+## Instructions
 
-Git metadata for version control. This tracks repository history, branches, and commits.
+Ensure that [Astral's UV](https://docs.astral.sh/uv/#installation) is installed prior to following along.
 
-You generally should not edit files inside this folder directly.
+Begin by syncing and using the same environment as we did:
+```bash
+uv sync
+source .venv/bin/activate
+```
 
-## References
+### To generate MNIST data:
 
-[SUBLIMINAL LEARNING: LANGUAGE MODELS
-TRANSMIT BEHAVIORAL TRAITS VIA HIDDEN SIGNALS
-IN DATA](https://arxiv.org/pdf/2507.14805)
+Run `uv run src/mnist_subliminal_training.py`.
 
-[Transformer Lens Models](https://miv.name/transformerlens-model-table/)
+Under `output/` you should see figures related to the MNIST replication we worked on generated.
 
-## Key Files
+### To Generate Finetuned Results:
 
-- `README.md`: project overview, references, and repository guide.
-- `AGENTS.md`: repository-specific working instructions for coding agents.
-- `pyproject.toml`: project metadata and Python dependencies.
-- `uv.lock`: locked dependency versions for reproducible environments.
-- `Report1.md`: notes or written analysis associated with the project.
+Run:
+1. `uv run python src/generate_student_responses.py`
+2. `uv run python src/evaluate_student_responses.py`
+3. The first few cells in `notebooks/finetuned_analysis.ipynb`
+
+In `notebooks/` you should see some figures generated that compare a default model with finetuned and prompt-engineered models.
+
+### To Generate Purely Prompt-Engineered Results:
+
+Run:
+1. `uv run python src/owl_prompt_engineered_student_experiment.py`
+2. The last cell in `notebooks/finetuned_analysis.ipynb`
+
+In `notebooks/`, a plot regarding the comparison of owl-prompt-engineered model outputs and a default model outputs is generated
