@@ -4,6 +4,8 @@ Joe Huston
 
 Daniel Krawciw
 
+**NOTE:** The compiled project writeup is in `docs/`
+
 ## Description
 
 This project explores subliminal learning in neural networks and language models. The codebase includes experiments that recreate simplified results from the subliminal learning paper, run fine-tuned teacher/student language-model pipelines, and compare those results against prompt-engineered alternatives.
@@ -25,6 +27,10 @@ Contains paper-writing and figure assets. The main LaTeX draft is stored here, a
 ### `notebooks/`
 
 Contains exploratory analysis notebooks. These notebooks are used to inspect saved outputs, summarize evaluation results, and generate comparison plots from experiment artifacts.
+
+## `assets/`
+
+Contains model training data (about different animals), prompts - to be answered by models to generate student model training data, and finetuned model information.
 
 ## Instructions
 
