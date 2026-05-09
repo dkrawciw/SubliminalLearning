@@ -19,6 +19,7 @@ TRAITS = ("catfish", "alligator", "owl")
 TRAINING_TOPICS = ("math", "neutral", "reasoning")
 RUN_FINETUNED_EVALUATION = True
 RUN_PROMPT_ENGINEERED_EVALUATION = True
+RUN_DEFAULT_EVALUATION = True
 
 
 """Initialize OpenAI Client Using API Key from Environment Variable"""
@@ -50,7 +51,7 @@ def get_prompts(prompt_file: Path = ANIMAL_EVALUATION_FILE) -> list[str]:
     return prompts
 
 
-def prompt_model(client: OpenAI, model: str, input_prompt: str) -> str:
+def prompt_model(client: OpenAI, model: str, input_prompt: str | list[dict[str, str]]) -> str:
     response = client.responses.create(
         model=model,
         input=input_prompt,
@@ -120,15 +121,41 @@ class PromptEngineeredStudentModel:
             for record in prompt_records
         ]
 
-    def build_student_prompt(self, evaluation_prompt: str) -> str:
+    def build_developer_prompt(self) -> str:
         train_prompt_text = "\n".join(self.teacher_prompts)
-        return f"Study the following prompts and responses: {train_prompt_text}. {evaluation_prompt}"
+        return f"Study the following prompts and responses: {train_prompt_text}"
+
+    def build_student_prompt(self, evaluation_prompt: str) -> list[dict[str, str]]:
+        return [
+            {
+                "role": "developer",
+                "content": self.build_developer_prompt(),
+            },
+            {
+                "role": "user",
+                "content": evaluation_prompt,
+            },
+        ]
 
     def answer_prompt(self, client: OpenAI, evaluation_prompt: str) -> str:
         return prompt_model(
             client=client,
             model=BASE_MODEL,
             input_prompt=self.build_student_prompt(evaluation_prompt),
+        )
+
+
+class DefaultStudentModel:
+    def __init__(self):
+        self.trait = "default"
+        self.topic = "default"
+        self.model_name = BASE_MODEL
+
+    def answer_prompt(self, client: OpenAI, evaluation_prompt: str) -> str:
+        return prompt_model(
+            client=client,
+            model=self.model_name,
+            input_prompt=evaluation_prompt,
         )
 
 
@@ -197,6 +224,13 @@ def evaluate_prompt_engineered_students(
     return evaluator.evaluate_models(prompt_engineered_models)
 
 
+def evaluate_default_student(
+    evaluator: ModelEvaluator,
+) -> list[dict[str, str]]:
+    default_model = DefaultStudentModel()
+    return evaluator.evaluate_model(default_model)
+
+
 def main():
     client = build_client()
     evaluation_prompts = get_prompts(ANIMAL_EVALUATION_FILE)
@@ -210,6 +244,8 @@ def main():
         evaluation_results["finetuned"] = evaluate_finetuned_students(evaluator)
     if RUN_PROMPT_ENGINEERED_EVALUATION:
         evaluation_results["prompt_engineered"] = evaluate_prompt_engineered_students(evaluator)
+    if RUN_DEFAULT_EVALUATION:
+        evaluation_results["default"] = evaluate_default_student(evaluator)
 
     OUTPUT_DIR.mkdir(exist_ok=True)
     with open(OUTPUT_FILE, "wb") as f:
